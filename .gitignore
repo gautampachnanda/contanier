@@ -196,7 +196,6 @@ buildNumber.properties
 .mvn/wrapper/maven-wrapper.jar
 .flattened-pom.xml
 **/*.iml
-**/**/*.iml
 
 ### Gradle ###
 .gradle
@@ -218,3 +217,8 @@ gradle-app.setting
 **/build/
 
 # End of https://www.gitignore.io/api/java,maven,gradle,eclipse,intellij
+
+# custom output
+**/build.txt
+**/running.txt
+**/container.txt
