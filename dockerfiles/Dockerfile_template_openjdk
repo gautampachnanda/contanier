@@ -1,0 +1,48 @@
+FROM ${FROM}
+MAINTAINER Gautam Pachnanda <gautam@pachnanda.org>
+
+#ARG MVN_VERSION 3.4.4
+#ARG GRADLE_VERSION 6.2.2
+
+ENV MAVEN_VERSION ${MVN_VERSION}
+ENV GRADLE_VERSION ${GRD_VERSION}
+ENV MAVEN_HOME /usr/lib/mvn
+ENV GRADLE_HOME /usr/lib/gradle
+ENV PATH $MAVEN_HOME/bin:$PATH
+ENV PATH $GRADLE_HOME/bin:$PATH
+ENV GRADLE_ZIP_NAME="gradle-$GRADLE_VERSION-bin.zip"
+ENV GRADLE_DNLD_PATH="https://services.gradle.org/distributions"
+
+WORKDIR /usr/src/app
+
+RUN yum -y install wget chmod curl unzip man tar gz gunzip tar gzip zip unzip bzip2 sudo
+
+RUN rm -rf /usr/lib/mvn
+RUN mkdir /usr/lib/mvn
+RUN rm -rf /tmp/gradle
+RUN mkdir /tmp/gradle
+
+RUN wget http://archive.apache.org/dist/maven/maven-3/$MAVEN_VERSION/binaries/apache-maven-$MAVEN_VERSION-bin.tar.gz && \
+  tar -zxvf apache-maven-$MAVEN_VERSION-bin.tar.gz && \
+  rm apache-maven-$MAVEN_VERSION-bin.tar.gz && \
+  cp -R apache-maven-$MAVEN_VERSION/* /usr/lib/mvn
+
+RUN echo "Downloading gradle from $GRADLE_DNLD_PATH/$GRADLE_ZIP_NAME"
+RUN wget "$GRADLE_DNLD_PATH/$GRADLE_ZIP_NAME" -P /tmp
+
+RUN sudo unzip -d /tmp/gradle "/tmp/$GRADLE_ZIP_NAME" && \
+ls -lah "/tmp/$GRADLE_ZIP_NAME" && \
+cp -R "/tmp/gradle/gradle-$GRADLE_VERSION/" /usr/lib/gradle/
+
+RUN mkdir -p /usr/src/app
+
+RUN export PATH=$PATH:"$MAVEN_HOME/bin/:$GRADLE_HOME/bin/" && \
+
+RUN mvn --version
+RUN java -version
+RUN gradle --version
+
+RUN echo " echo \"Aadi .. is not listening.......\"" > /entrypoint.sh && \
+ chmod +rwx /entrypoint.sh
+
+ENTRYPOINT ["/entrypoint.sh"]
